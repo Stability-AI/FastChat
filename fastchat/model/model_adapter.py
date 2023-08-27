@@ -547,6 +547,50 @@ class JSLMAlphaAdapter(BaseModelAdapter):
         # TODO: (meng) might need to adapt default conv tpl based on model version
         return get_conv_template("jslm_alpha")
 
+
+class WeblabAdapter(BaseModelAdapter):
+    "Model adapter for weblab-10b-instruction-sft"
+
+    def match(self, model_path: str):
+        return model_path.endswith("weblab-10b-instruction-sft")
+
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_path,
+            **from_pretrained_kwargs,
+        )
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            **from_pretrained_kwargs,
+        )
+        return model, tokenizer
+
+    def get_default_conv_template(self, model_path: str):
+        return get_conv_template("weblab")
+
+
+class RinnaAdapter(BaseModelAdapter):
+    "Model adapter for rinna"
+
+    def match(self, model_path: str):
+        return model_path.endswith("japanese-gpt-neox-3.6b-instruction-ppo")
+
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_path,
+            use_fast=False,
+            **from_pretrained_kwargs,
+        )
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            **from_pretrained_kwargs,
+        )
+        return model, tokenizer
+
+    def get_default_conv_template(self, model_path: str):
+        return get_conv_template("rinna")
+
+
 class VicunaAdapter(BaseModelAdapter):
     "Model adapater for Vicuna models (e.g., lmsys/vicuna-7b-v1.3)" ""
 
@@ -1430,6 +1474,8 @@ class AquilaChatAdapter(BaseModelAdapter):
 # Note: the registration order matters.
 # The one registered earlier has a higher matching priority.
 register_model_adapter(JSLMAlphaAdapter)
+register_model_adapter(WeblabAdapter)
+register_model_adapter(RinnaAdapter)
 register_model_adapter(PeftModelAdapter)
 register_model_adapter(VicunaAdapter)
 register_model_adapter(AiroborosAdapter)
