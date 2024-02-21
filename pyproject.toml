@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fschat"
+name = "fastchat"
 version = "0.2.24"
 description = "An open platform for training, serving, and evaluating large language model based chatbots."
 readme = "README.md"
