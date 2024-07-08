@@ -5,6 +5,7 @@ We kindly request that you import fastchat instead of copying this file if you w
 You can contribute back the changes you want to make.
 """
 
+import re
 import dataclasses
 from enum import auto, IntEnum
 from typing import List, Any, Dict
@@ -29,6 +30,7 @@ class SeparatorStyle(IntEnum):
     PHOENIX = auto()
     ROBIN = auto()
     JSLM_ALPHA = auto()
+    RINNA = auto()
 
 
 @dataclasses.dataclass
@@ -221,6 +223,15 @@ class Conversation:
                 else:
                     ret += role + ": \n"
             return ret
+        elif self.sep_style == SeparatorStyle.RINNA:
+            ret = ""
+            for role, message in self.messages:
+                if message:
+                    message = re.sub(r'\n+', '<NL>', message)
+                    ret += role + ": " + message + self.sep
+                else:
+                    ret += role + ": "
+            return ret
         else:
             raise ValueError(f"Invalid style: {self.sep_style}")
 
@@ -369,6 +380,35 @@ register_conv_template(
         sep="\n\n### ",
         stop_str="<|endoftext|>",
         stop_token_ids=[3],
+        add_special_tokens=False,
+    )
+)
+
+# conv template for matsuo-lab/weblab-10b-instruction-sft
+register_conv_template(
+    Conversation(
+        name="weblab",
+        system_message="以下は、タスクを説明する指示です。要求を適切に満たす応答を書きなさい。",
+        roles=("指示", "応答"),
+        messages=(),
+        offset=0,
+        sep_style=SeparatorStyle.JSLM_ALPHA,
+        sep="\n\n### ",
+        stop_str="<|endoftext|>",
+        add_special_tokens=False,
+    )
+)
+
+# conv tamplate for rinna
+register_conv_template(
+    Conversation(
+        name="rinna",
+        system_message="",
+        roles=("ユーザー", "システム"),
+        messages=(),
+        offset=0,
+        sep_style=SeparatorStyle.RINNA,
+        sep="<NL>",
         add_special_tokens=False,
     )
 )
