@@ -16,6 +16,13 @@ from tqdm import tqdm
 from fastchat.llm_judge.common import load_questions, temperature_config
 from fastchat.model import load_model, get_conversation_template
 
+os.environ["HF_HOME"] = "/app/tmp"
+os.environ["HF_PERSONAL_TOKEN"] = "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"
+if os.getenv("HF_PERSONAL_TOKEN") is not None:
+    # huggingface の private なリポジトリや token が必要なリポジトリにアクセスする場合必要
+    from huggingface_hub import login
+    login(token=os.getenv("HF_PERSONAL_TOKEN"))
+
 
 def run_eval(
     model_path,
@@ -114,8 +121,9 @@ def get_model_answers(
 
                 # TODO: find better way to adapt for NAI tokenizer usage of JSLM Alpha
                 # this should align with the model adapter behavior
-                add_special_tokens = conv.add_special_tokens
-                input_ids = tokenizer([prompt], add_special_tokens=add_special_tokens).input_ids
+                # add_special_tokens = conv.add_special_tokens
+                # input_ids = tokenizer([prompt], add_special_tokens=add_special_tokens).input_ids
+                input_ids = tokenizer([prompt]).input_ids
 
                 if temperature < 1e-4:
                     do_sample = False

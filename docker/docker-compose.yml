@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: ..
-      dockerfile: Dockerfile.mtbench
+      dockerfile: docker/Dockerfile.mtbench
     image: mtbench:latest
     container_name: mtbench
     restart: "no"
@@ -12,6 +12,9 @@ services:
       - type: bind
         source: ..
         target: /app
+      - type: bind
+        source: /raid/models
+        target: /app/models
     tty: true
     stdin_open: true
     deploy:
@@ -19,5 +22,5 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
-              capabilities: [gpu]    
+              device_ids: ["4", "5", "6", "7"]
+              capabilities: [gpu]

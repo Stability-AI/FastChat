@@ -14,13 +14,14 @@ RUN apt update && apt upgrade -y \
     && curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
     && python3.11 get-pip.py \
     && rm get-pip.py \
+    && ln -sf /usr/bin/python3.11 /usr/bin/python \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml /app/
-
-RUN pip install poetry \
+WORKDIR /app
+RUN pip install setuptools && pip install poetry \
     && poetry config virtualenvs.create false \
-    && pip install ".[model_worker,llm_judge]"
+    && poetry install
 
 COPY ./ /app
